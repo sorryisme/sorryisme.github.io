@@ -1,15 +1,109 @@
-```
+---
 layout: post
 title:  "애노테이션으로 유효성 검토하기"
 date:   2020-08-17 03:18:23 +0700
 categories: [spring]
-```
 
-
+---
 
 ## 애노테이션으로 유효성 검토
 
-- 작성중
+자바 스크립트를 통해서 유효성 검토 또한 중요하지만 클라이언트 상에서 자바스크립트 변조가 가능하기 때문에 중요한 데이터에 대해서는 검증이 필요하다
+
+서버에서 일일히 코드로 검증하는 방법이 있지만 spring에서 제공하는 @Valid를 통한 검증을 소스에 적용해보았다.
+
+
+
+### 의존성 추가
+
+gradle에 다음과 같이 의존성을 추가한다
+
+```java
+implementation 'org.springframework.boot:spring-boot-starter-web'
+```
+
+- Hibernate validator에 대한 설명은 다음 블로그에서 잘 설명하고 있다.[링크](https://www.popit.kr/javabean-validation%EA%B3%BC-hibernate-validator-%EA%B7%B8%EB%A6%AC%EA%B3%A0-spring-boot/) 
+
+
+
+### DTO에 애노테이션 추가
+
+```java
+@Setter
+@Getter
+@NoArgsConstructor
+@ToString
+@EqualsAndHashCode
+public class MemberDTO {
+
+    private Long id;
+
+    @NotEmpty(message = "email은 입력되어야합니다.")
+    private String email;
+
+    private CommonFile profile;
+
+    @NotEmpty(message ="비밀번호는 입력되어야합니다.")
+    private String password;
+
+    @NotEmpty(message ="닉네임은 입력되어야합니다.")
+    @Length(max = 30, message = "닉네임은 30자 이내여야합니다.")
+    private String nickName;
+
+    private String mobile;
+
+    private String msgYn;
+
+    private String msgId;
+```
+
+- 유효성 검토가 필요한 변수에 검증 애노테이션을 추가 해준다.
+
+  
+
+#### Controller @Valid 추가
+
+- Controller 커맨드 객체 앞에 @Valid를 붙여준다
+- 또한 **BindingResult**를 통해 결과가 에러인 경우 다시 form으로 리턴한다
+
+```java
+@PostMapping("/member/signUp")
+public String saveMember(@RequestParam(name ="file") MultipartFile file, @Valid MemberDTO memberDTO, BindingResult bindingResult) throws Exception{
+    if(bindingResult.hasErrors()){
+      return "/member/signUp";
+    }
+
+    Long id = memberService.saveMember(memberDTO);
+    log.info("{}",id);
+  return "/member/signUp";
+}
+```
+
+#### 
+
+### 에러 표기
+
+```html
+<form id='formData' th:action="@{/member/signUp}" th:object="${memberDTO}" method="post" enctype="multipart/form-data">
+... 중략
+
+<div id="emailDiv" class="emailDiv">
+  <h4>개인 정보 입력</h4>
+    <label class="icon" for="email"><i class="icon-envelope"></i></label>
+    <input type="email" id='email' name="email" placeholder="example@email.com"/>
+  </div>
+<td class="err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">email Error</td>
+```
+
+- 타임리프에서 만약 필드에 에러가 확인되면 에러메세지를 표기한다
+
+
+
+####	참고사이트
+
+참고 사이트 : https://spring.io/guides/gs/validating-form-input/
+
+spring 공식 페이지에서 예시를 디테일하게 작성해놓았기 때문에 참고하면 편하다
 
 
 
