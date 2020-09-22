@@ -1,11 +1,9 @@
 ---
 layout: post
-title:  "왜 int 대신 Integer를 사용했을까"
+title: "왜 int 대신 Integer를 사용했을까"
 date:   2020-09-21 00:18:23 +0700
-categories: [spring], [mybatis]
+categories: [spring]
 ---
-
-
 
 # 왜 int 대신 Integer를 사용했을까?
 
