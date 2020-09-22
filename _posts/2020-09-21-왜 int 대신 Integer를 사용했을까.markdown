@@ -7,7 +7,7 @@ categories: [spring], [mybatis]
 
 
 
-# 왜 int 대신 INTEGER를 사용했을까?
+# 왜 int 대신 Integer를 사용했을까?
 
 실무 코드를 보면(마이바티스를 사용한 프로젝트) int 대신 Integer를 사용한 경우가 많다. 실제로 관련된 책에서는 int 대신 Integer 사용을 권고했는데 실상 이유에 대해서는 자세히 밝히지 않아 내용을 찾아보았다.
 
